@@ -77,7 +77,7 @@ def get_data(html, include_auth=False):
 def retrieve(species):
     html = search_species_page(species)
     if not is_accepted(html):
-        html = get_synonym_page(html)
+        html = get_synonym_page(html, species)
         data = get_data(html, include_auth=True)
     else:
         data = get_data(html)
