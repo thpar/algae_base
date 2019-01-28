@@ -1,3 +1,4 @@
+import sys
 import requests
 from pyquery import PyQuery as pq
 import html as html_goodies
@@ -5,6 +6,9 @@ import click
 
 algae_base_url = "http://www.algaebase.org/search/species/"
 algae_base_species_details_url = "http://www.algaebase.org/search/species/detail/"
+
+def eprint(*args, **kwargs):
+    print(*args, file=sys.stderr, **kwargs)
 
 def search_species_page(species):
     payload = {'name': species,
@@ -47,8 +51,9 @@ def get_accepted_name(html):
 def get_authority(html):
     d = pq(html)
     p = d('p b:contains("Publication details")').parent()
-    auth = p.html().split('</i> ')[1].split(':')[0]    
-    return html_goodies.unescape(auth)
+    auth_part = p.html().split('</i>')[1]
+    auth = auth_part.split(':')[0]
+    return html_goodies.unescape(auth.strip())
     
 def get_data(html, include_auth=False):
     data = {}
@@ -77,14 +82,13 @@ def process_file(missing_file_name):
     with open(missing_file_name) as missing_file:
         for line in missing_file:
             original_species = line.strip()
-            #print('---')
-            #print(original_species)
+            eprint(original_species)
             try:
                 data = retrieve(original_species)
             except ValueError as e:
                 print(e)
 
-            print('\t'.join([original_species, data['Order'], data['Order'], data['Family'], data['Genus'], data['Species'], data['Authority']]))
+            print('\t'.join([original_species, data['Order'], data['Family'], data['Genus'], data['Species'], data['Authority']]))
 
 
 @click.command()
