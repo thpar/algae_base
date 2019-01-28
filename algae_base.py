@@ -91,10 +91,10 @@ def process_file(missing_file_name):
             eprint(original_species)
             try:
                 data = retrieve(original_species)
+                print('\t'.join([original_species, data['Order'], data['Family'], data['Genus'], data['Species'], data['Authority']]))
             except ValueError as e:
                 print(e)
 
-            print('\t'.join([original_species, data['Order'], data['Family'], data['Genus'], data['Species'], data['Authority']]))
 
 
 @click.command()
