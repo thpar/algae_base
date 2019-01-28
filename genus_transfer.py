@@ -14,6 +14,8 @@ def read_names(name_file):
         for row in data:
             if row['Species'] not in name_dict:
                 name_dict[row['Species']] = (row['Order'], row['Family'], row['Genus'])
+                if 'Synonym' in row and 'Authority' in row:
+                    name_dict[row['Species']] = name_dict[row['Species']]+(row['Synonym', row['Authority']])
                 
     return name_dict
 
@@ -37,6 +39,10 @@ def fill_out(target_file, name_dict):
                     row['Order'] = keyData[0]
                     row['Family'] = keyData[1]
                     row['Genus'] = keyData[2]
+                    if keyData[3]:
+                        row['tname'] = keyData[3]
+                    if keyData[4]:
+                        row['tauthor'] = keyData[4]
                 else:
                     if keyName not in missing_names:
                         missing_names.append(keyName)
