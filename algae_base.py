@@ -19,22 +19,28 @@ def search_species_page(species):
                'sortBy2': 'species'
     }
     r = requests.post(algae_base_url, data=payload)
-    if "no records were found with your search parameters" in r.text:
-        raise ValueError("Species not found: "+species)
-    if "For more detail, click on the name or the currently accepted name" in r.text:
-        raise ValueError("Multiple entries found: "+species)
+    check_valid_page(r, species)    
     return r.text
 
 def is_accepted(html):
     d = pq(html)
     p = d('p b:contains("Status of name") + br + span')
-    return "entity that is currently accepted taxonomically" in p.text()
+    return not p or "entity that is currently accepted taxonomically" in p.text()
 
-def get_synonym_page(html):
+def check_valid_page(r, species):
+    if "no records were found with your search parameters" in r.text:
+        raise ValueError("Species not found: "+species)
+    if "For more detail, click on the name or the currently accepted name" in r.text:
+        raise ValueError("Multiple entries found: "+species)
+    if "An error has occurred" in r.text:
+        raise ValueError("Error occurred for: "+species)
+
+def get_synonym_page(html, species):
     d = pq(html)
     a = d('p b:contains("Status of name") + br + span a')
     species_id = a.attr['href'].split('=')[1]
     r = requests.get(algae_base_species_details_url, params={'species_id': species_id})
+    check_valid_page(r, species)
     return r.text
 
 def get_classification_data(html, data_type):
