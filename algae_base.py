@@ -1,6 +1,7 @@
 import requests
 from pyquery import PyQuery as pq
 import html as html_goodies
+import click
 
 algae_base_url = "http://www.algaebase.org/search/species/"
 algae_base_species_details_url = "http://www.algaebase.org/search/species/detail/"
@@ -14,6 +15,10 @@ def search_species_page(species):
                'sortBy2': 'species'
     }
     r = requests.post(algae_base_url, data=payload)
+    if "no records were found with your search parameters" in r.text:
+        raise ValueError("Species not found: "+species)
+    if "For more detail, click on the name or the currently accepted name" in r.text:
+        raise ValueError("Multiple entries found: "+species)
     return r.text
 
 def is_accepted(html):
@@ -45,20 +50,51 @@ def get_authority(html):
     auth = p.html().split('</i> ')[1].split(':')[0]    
     return html_goodies.unescape(auth)
     
-def get_data(html):
+def get_data(html, include_auth=False):
     data = {}
     data['Order'] = get_classification_data(html, 'Order')
     data['Family'] = get_classification_data(html, 'Family')
     data['Genus'] = get_classification_data(html, 'Genus')
-    data['Species'] = get_accepted_name(html)
-    data['Authority'] = get_authority(html)
+    if include_auth:
+        data['Species'] = get_accepted_name(html)
+        data['Authority'] = get_authority(html)
+    else:
+        data['Species'] = ''
+        data['Authority'] = ''
     return data
 
 def retrieve(species):
     html = search_species_page(species)
     if not is_accepted(html):
         html = get_synonym_page(html)
-    data = get_data(html)
-    print(data)
+        data = get_data(html, include_auth=True)
+    else:
+        data = get_data(html)
+    return data
 
+    
+def process_file(missing_file_name):
+    with open(missing_file_name) as missing_file:
+        for line in missing_file:
+            original_species = line.strip()
+            #print('---')
+            #print(original_species)
+            try:
+                data = retrieve(original_species)
+            except ValueError as e:
+                print(e)
+
+            print('\t'.join([original_species, data['Order'], data['Order'], data['Family'], data['Genus'], data['Species'], data['Authority']]))
+
+
+@click.command()
+@click.argument('species_file',
+                required = True,
+                type=click.Path(exists=True)
+)
+def main(species_file):
+    process_file(species_file)
+
+if __name__ == '__main__':
+    main()
     
