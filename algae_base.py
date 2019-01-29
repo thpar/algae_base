@@ -96,12 +96,12 @@ def process_file(missing_file_name):
             except ValueError as e:
                 print(e)
 
-def process_csv_file(csv_file_name):
+def process_csv_file(csv_file_name, column):
     with open(csv_file_name, encoding="utf-8") as input_file:
         with open('algae_base_not_found.txt', 'w') as not_found:
             data = csv.DictReader(input_file, dialect="excel")
             for row in data:
-                original_species = row['tname']
+                original_species = row[column]
                 try:
                     data = retrieve(original_species)
                     print('\t'.join([original_species, data['Order'], data['Family'], data['Genus'], data['Species'], data['Authority']]))
@@ -113,8 +113,16 @@ def process_csv_file(csv_file_name):
                 required = True,
                 type=click.Path(exists=True)
 )
-def main(species_file):
-    process_file(species_file)
+@click.option(
+    '--csv', 'csv_column',
+    required = False,
+    help="If using a csv file as input, set the Species column."
+)
+def main(species_file, csv_column):
+    if csv_column:
+        process_csv_file(species_file, csv_column)
+    else:
+        process_file(species_file)
 
 if __name__ == '__main__':
     main()
