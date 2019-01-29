@@ -15,7 +15,7 @@ def read_names(name_file):
             if row['Species'] not in name_dict:
                 name_dict[row['Species']] = (row['Order'], row['Family'], row['Genus'])
                 if 'Synonym' in row and 'Authority' in row:
-                    name_dict[row['Species']] = name_dict[row['Species']]+(row['Synonym', row['Authority']])
+                    name_dict[row['Species']] = name_dict[row['Species']]+(row['Synonym'], row['Authority'])
                 
     return name_dict
 
