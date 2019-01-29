@@ -39,9 +39,8 @@ def fill_out(target_file, name_dict):
                     row['Order'] = keyData[0]
                     row['Family'] = keyData[1]
                     row['Genus'] = keyData[2]
-                    if keyData[3]:
+                    if len(keyData) > 3:
                         row['tname'] = keyData[3]
-                    if keyData[4]:
                         row['tauthor'] = keyData[4]
                 else:
                     if keyName not in missing_names:
