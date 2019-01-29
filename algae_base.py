@@ -62,26 +62,22 @@ def get_authority(html):
     auth = auth_part.split(':')[0]
     return html_goodies.unescape(auth.strip())
     
-def get_data(html, include_auth=False):
+def get_data(html):
     data = {}
     data['Order'] = get_classification_data(html, 'Order')
     data['Family'] = get_classification_data(html, 'Family')
     data['Genus'] = get_classification_data(html, 'Genus')
-    if include_auth:
-        data['Species'] = get_accepted_name(html)
-        data['Authority'] = get_authority(html)
-    else:
-        data['Species'] = ''
-        data['Authority'] = ''
+    data['Species'] = get_accepted_name(html)
+    data['Authority'] = get_authority(html)
+
     return data
 
 def retrieve(species):
     html = search_species_page(species)
     if not is_accepted(html):
         html = get_synonym_page(html, species)
-        data = get_data(html, include_auth=True)
-    else:
-        data = get_data(html)
+
+    data = get_data(html)
     return data
 
     
