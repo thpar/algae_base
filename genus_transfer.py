@@ -50,20 +50,20 @@ def fill_out(target_file, name_dict):
                 
         return (new_data, header, missing_names)
 
-def write_output(new_data, header):
+def write_output(new_data, header, output_file_name):
     """
     Write a CSV file with new data, using the same header.
     """
-    with open("output.csv", 'w', encoding="utf-8") as output_file:
+    with open(output_file_name, 'w', encoding="utf-8") as output_file:
         writer = csv.writer(output_file, dialect='excel', quoting=csv.QUOTE_MINIMAL)
         writer.writerow(header)
         writer.writerows(new_data)
 
-def write_missing_names(missing_names):
+def write_missing_names(missing_names, missing_file_name):
     """
     Write a simple list of missing species names.
     """
-    with open("missing.txt", 'w') as missing_file:        
+    with open(missing_file_name, 'w') as missing_file:        
         for name in missing_names:
             missing_file.write(name+'\n')
 
@@ -77,7 +77,17 @@ def write_missing_names(missing_names):
                 required = True,
                 type=click.Path(exists=True)
 )
-def main(name_file, target_file):
+@click.option('-o', '--output_file',
+              required=True,
+              help="Output CSV file.",
+              type=click.Path(exists=True)
+)
+@click.option('-m', '--missing_file',
+              required=True,
+              help="Output missing species file."
+              type=click.Path(exists=True)
+)
+def main(name_file, target_file, output_file, missing_file):
     """
     NAME_FILE : CSV file containing accepted species names and data.
 
@@ -85,8 +95,8 @@ def main(name_file, target_file):
     """
     names = read_names(name_file)
     (new_data, header, missing_names) = fill_out(target_file, names)
-    write_output(new_data, header)
-    write_missing_names(missing_names)
+    write_output(new_data, header, output_file)
+    write_missing_names(missing_names, missing_file)
 
     
 if __name__ == '__main__':
