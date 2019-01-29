@@ -102,6 +102,7 @@ def process_csv_file(csv_file_name, column):
             data = csv.DictReader(input_file, dialect="excel")
             for row in data:
                 original_species = row[column]
+                eprint(original_species)
                 try:
                     data = retrieve(original_species)
                     print('\t'.join([original_species, data['Order'], data['Family'], data['Genus'], data['Species'], data['Authority']]))
