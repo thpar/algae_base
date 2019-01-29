@@ -3,6 +3,7 @@ import requests
 from pyquery import PyQuery as pq
 import html as html_goodies
 import click
+import csv
 
 algae_base_url = "http://www.algaebase.org/search/species/"
 algae_base_species_details_url = "http://www.algaebase.org/search/species/detail/"
@@ -95,7 +96,17 @@ def process_file(missing_file_name):
             except ValueError as e:
                 print(e)
 
-
+def process_csv_file(csv_file_name):
+    with open(csv_file_name, encoding="utf-8") as input_file:
+        with open('algae_base_not_found.txt', 'w') as not_found:
+            data = csv.DictReader(input_file, dialect="excel")
+            for row in data:
+                original_species = row['tname']
+                try:
+                    data = retrieve(original_species)
+                    print('\t'.join([original_species, data['Order'], data['Family'], data['Genus'], data['Species'], data['Authority']]))
+                except ValueError as e:
+                    print(e, file=not_found)
 
 @click.command()
 @click.argument('species_file',
