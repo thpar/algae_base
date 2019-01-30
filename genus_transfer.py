@@ -80,12 +80,12 @@ def write_missing_names(missing_names, missing_file_name):
 @click.option('-o', '--output_file',
               required=True,
               help="Output CSV file.",
-              type=click.Path(exists=True)
+              type=click.Path()
 )
 @click.option('-m', '--missing_file',
               required=True,
               help="Output missing species file.",
-              type=click.Path(exists=True)
+              type=click.Path()
 )
 def main(name_file, target_file, output_file, missing_file):
     """
