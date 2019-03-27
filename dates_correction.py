@@ -4,16 +4,16 @@ import click
 
 def read_years(years_file_name):
 	"""
-	Create a dictionary to map species/longitude/latitude to a year.
+	Create a dictionary to map species/longitude/latitude to a list of years.
 	"""
 	years = {} 
 	with open(years_file_name, encoding="utf-8-sig") as years_file:
 		data = csv.DictReader(years_file, dialect="excel")
 		for row in data:
 			triple = (row['scientificName'], row['decimalLatitude'], row['decimalLongitude'])
-			if triple in years:
-				print("Warning: found multiple entries for: {}".format(triple))
-			years[triple] = row['year']
+			if triple not in years:
+				years[triple] = []
+			years[triple].append(row['year'])
 	return years
 
 def add_years(target_file_name, years, output_file_name):
@@ -29,16 +29,23 @@ def add_years(target_file_name, years, output_file_name):
 				writer.writerow(data.fieldnames)
 
 				## Loop over target data and add year if found
-				## If not found: add a missing.txt line
-				## Write new row to output csv
+				## If not found or if we have more matches than years: add a missing.txt line
 				for row in data:
 					triple = (row['Species'], row['latitude'], row['longitude'])
 					current_row = tuple(row.values())
 					if triple in years:
-						year = years[triple]
+						if len(years[triple]) > 0:
+							## Take and remove first year we found
+							year = years[triple].pop(0)
+						else:
+							## We ran out of years for this triple
+							print("Number of hits mismatch: {}".format(triple), file=missing_file)
+							year = ''
 					else:
 						year = ''
-						print(triple, file=missing_file)
+						print("Triple not found: {}".format(triple), file=missing_file)
+						
+					## Write new row to output csv
 					newrow = current_row + (year,)
 					writer.writerow(newrow)
 
