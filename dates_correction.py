@@ -7,7 +7,7 @@ def read_years(years_file_name):
 	Create a dictionary to map species/longitude/latitude to a year.
 	"""
 	years = {} 
-	with open(years_file_name, encoding="utf-8") as years_file:
+	with open(years_file_name, encoding="utf-8-sig") as years_file:
 		data = csv.DictReader(years_file, dialect="excel")
 		for row in data:
 			triple = (row['scientificName'], row['decimalLatitude'], row['decimalLongitude'])
@@ -20,8 +20,8 @@ def add_years(target_file_name, years, output_file_name):
 	"""
 	Loop over rows of target files and add year column if found
 	"""
-	with open(target_file_name, encoding="utf-8") as target_file:
-		with open(output_file_name,'w', encoding="utf-8") as output_file:
+	with open(target_file_name, encoding="utf-8-sig") as target_file:
+		with open(output_file_name,'w', encoding="utf-8-sig") as output_file:
 			with open("missing.txt", 'w') as missing_file:
 				data = csv.DictReader(target_file, dialect="excel")
 				writer = csv.writer(output_file, dialect="excel", quoting=csv.QUOTE_MINIMAL)
