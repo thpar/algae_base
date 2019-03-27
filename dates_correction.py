@@ -10,7 +10,7 @@ def read_years(years_file_name):
 	with open(years_file_name, encoding="utf-8-sig") as years_file:
 		data = csv.DictReader(years_file, dialect="excel")
 		for row in data:
-			triple = (row['scientificName'], row['decimalLatitude'], row['decimalLongitude'])
+			triple = (row['scientificName'].strip(), row['decimalLatitude'].strip(), row['decimalLongitude'].strip())
 			if triple not in years:
 				years[triple] = []
 			years[triple].append(row['year'])
@@ -32,7 +32,7 @@ def add_years(target_file_name, years, output_file_name):
 				## Loop over target data and add year if found
 				## If not found or if we have more matches than years: add a missing.txt line
 				for row in data:
-					triple = (row['Species'], row['latitude'], row['longitude'])
+					triple = (row['Species'].strip(), row['latitude'].strip(), row['longitude'].strip())
 					current_row = tuple(row.values())
 					if triple in years:
 						if len(years[triple]) > 0:
