@@ -33,7 +33,7 @@ def add_years(target_file_name, years, output_file_name):
 				## Write new row to output csv
 				for row in data:
 					triple = (row['Species'], row['latitude'], row['longitude'])
-					current_row = row.values()
+					current_row = tuple(row.values())
 					if triple in years:
 						year = years[triple]
 					else:
