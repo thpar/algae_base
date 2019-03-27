@@ -26,7 +26,7 @@ def add_years(target_file_name, years, output_file_name):
 				data = csv.DictReader(target_file, dialect="excel")
 				writer = csv.writer(output_file, dialect="excel", quoting=csv.QUOTE_MINIMAL)
 				## Write target header to output csv
-				write.writerow(data.fieldnames)
+				writer.writerow(data.fieldnames)
 
 				## Loop over target data and add year if found
 				## If not found: add a missing.txt line
