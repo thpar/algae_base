@@ -13,34 +13,34 @@ def read_years(years_file_name):
 			triple = (row['scientificName'], row['decimalLatitude'], row['decimalLongitude'])
 			if triple in years:
 				print("Warning: found multiple entries for: {}".format(triple))
-                        years[triple] = row['year']
+			years[triple] = row['year']
 	return years
 
 def add_years(target_file_name, years, output_file_name):
-        """
-        Loop over rows of target files and add year column if found
-        """
+	"""
+	Loop over rows of target files and add year column if found
+	"""
 	with open(target_file_name, encoding="utf-8") as target_file:
 		with open(output_file_name,'w', encoding="utf-8") as output_file:
-                        with open("missing.txt", 'w') as missing_file:
+			with open("missing.txt", 'w') as missing_file:
 				data = csv.DictReader(target_file, dialect="excel")
 				writer = csv.writer(output_file, dialect="excel", quoting=csv.QUOTE_MINIMAL)
-                                ## Write target header to output csv
-                                write.writerow(data.fieldnames)
+				## Write target header to output csv
+				write.writerow(data.fieldnames)
 
-                                ## Loop over target data and add year if found
-                                ## If not found: add a missing.txt line
-                                ## Write new row to output csv
-			        for row in data:
+				## Loop over target data and add year if found
+				## If not found: add a missing.txt line
+				## Write new row to output csv
+				for row in data:
 					triple = (row['Species'], row['latitude'], row['longitude'])
-                                        current_row = row.values()
-				        if triple in years:
-                                                year = years[triple]
+					current_row = row.values()
+					if triple in years:
+						year = years[triple]
 					else:
-                                                year = ''
-                                                print(triple, file=missing_file)
-                                        newrow = current_row + (year,)
-                                        writer.writerow(newrow)
+						year = ''
+						print(triple, file=missing_file)
+					newrow = current_row + (year,)
+					writer.writerow(newrow)
 
 
 
@@ -64,7 +64,6 @@ def main(years_file, target_file, output_file):
 	"""
 	years_dict = read_years(years_file)
 	add_years(target_file, years_dict, output_file)
-	
-	
+
 if __name__ == '__main__':
 	main()
