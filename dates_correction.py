@@ -1,31 +1,43 @@
+
+´´´
+
+    djgfsg
+
+´´´
+
+
+
+
+
+
+
 #!/usr/bin/env python3
 import csv
 import click
 
-def read_names(coords_file_name):
+def read_names(dates_file_name):
 	"""
 	Read a data and get `Species` names with `latitude`, longitude`.
 	"""
-	coordinates = [] 
-	with open(coords_file_name, encoding="utf-8") as coords_file:
-		data = csv.DictReader(coords_file, dialect="excel")
+	dates = [] 
+	with open(dates_file_name, encoding="utf-8") as dates_file:
+		data = csv.DictReader(dates_file, dialect="excel")
 		for row in data:
 			tripple = (row['Species'], row['latitude'], row['longitude'])
-			coordinates.append(tripple)
+			dates.append(tripple)
 				
-	return coordinates
+	return dates
 
-def add_coordinates(target_file_name, coordinates, output_file_name):
+def add_dates(target_file_name, dates, output_file_name):
 	with open(target_file_name, encoding="utf-8") as target_file:
 		with open(output_file_name,'w', encoding="utf-8") as output_file:
 			data = csv.DictReader(target_file, dialect="excel")
 			writer = csv.writer(output_file, dialect="excel", quoting=csv.QUOTE_MINIMAL)
 			for row in data:
 				tripple = (row['Species'], row['latitude'], row['longitude'])
-				if tripple in coordinates:
-					longitude_correct = str(-float(row['longitude']))
-					row['longitude'] = longitude_correct
-				writer.writerow(row.values())
+				if tripple in dates:
+					dates_correct = 'Species','latitude','longitude',.'year'
+					
 					
 					
 @click.command()
@@ -44,7 +56,7 @@ def add_coordinates(target_file_name, coordinates, output_file_name):
 )
 def main(coords_file, target_file, output_file):
 	"""
-	Correct for incorrect sign on coordinates (longitude)
+	Adds a "date" (year) column
 	"""
 	coords = read_names(coords_file)
 	add_coordinates(target_file, coords, output_file)
